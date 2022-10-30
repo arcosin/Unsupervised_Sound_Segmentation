@@ -16,16 +16,17 @@ import torch
 from vq_vae import VQVAE
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-vae = VQVAE(3, 28, 100, [16, 64, 128]).to(DEVICE)
+vae = VQVAE(1, 28, 100, [16, 64, 128]).to(DEVICE)
 transform = Compose([
     ToTensor(),
     Normalize((0.1307,), (0.3081,))
 ])
 #dataloader = DataLoader(MNIST(root='./', download=True,
                         #transform=transform), batch_size=512)
-image_path = "C:\\Users\\elico\\Documents\\GitHub\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
+image_path = "C:\\Users\\elico\\Documents\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
 X = []
 tensor_transform = transforms.ToTensor()
+"""
 for file in os.listdir(image_path):
     fname = os.fsdecode(file)
     png = Image.open(image_path + fname)
@@ -35,7 +36,12 @@ for file in os.listdir(image_path):
     newImg.save(image_path + 'temp.png', 'PNG')
     X.append(tensor_transform(Image.open(image_path + 'temp.png')))
 os.remove(image_path + 'temp.png')
+"""
 
+for file in os.listdir(image_path):
+    fname = os.fsdecode(file)
+    img = Image.open(image_path + fname).convert('L')
+    X.append(tensor_transform(img))
 
 class Custom_Dataset(torch.utils.data.dataset.Dataset):
     def __init__(self, _dataset):
@@ -69,12 +75,22 @@ for ep in tqdm_bar:
         if i % 10 == 0:
             tqdm_bar.set_description('loss: {}'.format(loss['loss']))
 
-# Reconstruction
-dataloader_test = DataLoader(MNIST(
-    root='./', download=True, transform=transform, train=False), batch_size=16, shuffle=True)
 # vae.load_state_dict(torch.load('./vae.pt'))
+torch.save(vae, "./weights")
+#vae = torch.load("./weights")
 vae.eval()
-for x, _ in dataloader_test:
+
+"""
+X_test = []
+tensor_transform = transforms.ToTensor()
+for file in os.listdir(image_path):
+    fname = os.fsdecode(file)
+    img = Image.open(image_path + fname).convert('L')
+    X_test.append(tensor_transform(img))
+    """
+# Reconstruction
+dataloader_test = torch.utils.data.DataLoader(X, batch_size=512)
+for x in dataloader_test:
     x = x.to(DEVICE).float()
     reconstruct_x = vae.generate(x)
     new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
