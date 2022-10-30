@@ -161,3 +161,4 @@ cython_debug/
 
 .DS_Store
 dataset/raw/ZOOM0012.MP3
+preprocess.sh
