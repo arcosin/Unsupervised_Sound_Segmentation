@@ -24,7 +24,7 @@ class VectorQuantizer(nn.Module):
         self.embedding = nn.Embedding(self.K, self.D)
         self.embedding.weight.data.uniform_(-1 / self.K, 1 / self.K)
 
-    def forward(self, latents: Tensor) -> tuple[Tensor, Tensor]:
+    def forward(self, latents: Tensor):
         # [B x D x H x W] -> [B x H x W x D]
         latents = latents.permute(0, 2, 3, 1).contiguous()
         latents_shape = latents.shape
