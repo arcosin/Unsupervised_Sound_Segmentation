@@ -16,7 +16,7 @@ def spectrogram_to_wav(from_array: np.ndarray, out_file: str) -> None:
     # Convert to wav
     wav = librosa.feature.inverse.mel_to_audio(S)
     # Save the wav
-    wavfile.write(out_file, 22050, wav)
+    wavfile.write(out_file, 44100, wav)
 
 
 if __name__ == '__main__':

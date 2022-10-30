@@ -13,7 +13,8 @@ def preprocess(in_dir: str = '../dataset/raw/',
     processed_dir = out_dir
 
     # List all the files ending in .mp3 in the raw directory
-    files = [f for f in os.listdir(raw_dir) if f.lower().endswith('.mp3')]
+    files = sorted([f for f in os.listdir(
+        raw_dir) if f.lower().endswith('.mp3') and 'split' in f])
     print(f'Found {len(files)} files in {raw_dir}')
     print(f'Filenames: {files}')
 
@@ -21,11 +22,14 @@ def preprocess(in_dir: str = '../dataset/raw/',
     # Split the files into 5 second chunks
     # Calculate the number of chunks: total_time / chunk_time
 
+    num_start = 0
+
     for file in files:
         audio = pydub.AudioSegment.from_mp3(os.path.join(raw_dir, file))
         total_time = len(audio) / 1000
         num_chunks = total_time / chunk_time
-        for i in range(int(num_chunks)):
+        num_chunks = int(num_chunks)
+        for i in range(num_start, num_chunks + num_start):
             start = i * chunk_time * 1000
             end = (i + 1) * chunk_time * 1000
             chunk = audio[start:end]
@@ -34,11 +38,8 @@ def preprocess(in_dir: str = '../dataset/raw/',
                 os.makedirs(processed_dir + file[:-4])
             chunk.export(processed_dir + file[:-4] +
                          '/' + str(i) + '.wav', format='wav')
+        num_start += num_chunks
         print_green(f'Processed {file} into {int(num_chunks)} chunks')
-
-        # TODO: Delete the following two lines after 0012 is processed
-        print_yellow(f'Warning: 0012 is not processed due to large file size')
-        break
 
 
 if __name__ == '__main__':
