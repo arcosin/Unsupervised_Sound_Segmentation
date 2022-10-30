@@ -1,19 +1,21 @@
 
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
-from torch.cuda.amp import autocast_mode
 from tqdm import tqdm
-from torchvision.datasets import MNIST
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 from torchvision.transforms import Normalize, Compose, ToTensor
 from torchvision import transforms
 from PIL import Image
 import os
 import numpy as np
-
+import pickle
 import torch
-
 from vq_vae import VQVAE
+
+def read_pkl(pkl_file):
+    with open(pkl_file, 'rb') as f:
+        data = pickle.load(f)
+    return data
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 vae = VQVAE(1, 28, 100, [16, 64, 128]).to(DEVICE)
@@ -21,11 +23,12 @@ transform = Compose([
     ToTensor(),
     Normalize((0.1307,), (0.3081,))
 ])
-#dataloader = DataLoader(MNIST(root='./', download=True,
-                        #transform=transform), batch_size=512)
-image_path = "C:\\Users\\elico\\Documents\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
-X = []
-tensor_transform = transforms.ToTensor()
+
+#image_path = "C:\\Users\\elico\\Documents\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
+train_data = read_pkl('../data/train_tensor-001.pkl')
+test_data = read_pkl('../data/test_tensor.pkl')
+#X = []
+#tensor_transform = transforms.ToTensor()
 """
 for file in os.listdir(image_path):
     fname = os.fsdecode(file)
@@ -37,7 +40,7 @@ for file in os.listdir(image_path):
     X.append(tensor_transform(Image.open(image_path + 'temp.png')))
 os.remove(image_path + 'temp.png')
 """
-
+"""
 for file in os.listdir(image_path):
     fname = os.fsdecode(file)
     img = Image.open(image_path + fname).convert('L')
@@ -56,16 +59,21 @@ class Custom_Dataset(torch.utils.data.dataset.Dataset):
 
 
 X = Custom_Dataset(X)
-
-dataloader = torch.utils.data.DataLoader(X, batch_size=512)
+"""
+#dataloader = torch.utils.data.DataLoader(X, batch_size=512)
+train_ds = TensorDataset(train_data.to(DEVICE))
+test_ds = TensorDataset(test_data.to(DEVICE))
+train_dataloader = DataLoader(train_ds, batch_size=512)
+test_dataloader = DataLoader(train_ds, batch_size=512)
 
 optimizer = torch.optim.AdamW(vae.parameters(), lr=1e-3)
 
 # Train
 tqdm_bar = tqdm(range(5))
 for ep in tqdm_bar:
-    for i, (x) in enumerate(dataloader):
-        x = x.to(DEVICE).float()
+    for i, x in enumerate(train_dataloader):
+        x = x[0].to(DEVICE).float()
+        x = x[:, None, :, :]
         with torch.autocast(DEVICE):
             recon, input, vq_loss = vae(x)
             loss = vae.loss_function(recon, input, vq_loss)
@@ -89,8 +97,8 @@ for file in os.listdir(image_path):
     X_test.append(tensor_transform(img))
     """
 # Reconstruction
-dataloader_test = torch.utils.data.DataLoader(X, batch_size=512)
-for x in dataloader_test:
+#dataloader_test = torch.utils.data.DataLoader(X, batch_size=512)
+for x in test_dataloader:
     x = x.to(DEVICE).float()
     reconstruct_x = vae.generate(x)
     new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
