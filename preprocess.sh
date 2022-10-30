@@ -37,6 +37,6 @@ for folder in $(ls -d dataset/processed/*_split* | grep -v ZOOM0009); do
 
         # echo $(echo $folder | sed 's/_split.*//g')/spectrogram/
 
-        cp $spectrogram $target_dir/spectrogram/
+        mv $spectrogram $target_dir/spectrogram/
     done
 done
