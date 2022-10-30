@@ -7,8 +7,10 @@ python src/preprocess.py \
 for folder in $(ls -d dataset/processed/* | grep -v spectrogram); do
     for wav in $(ls $folder/*.wav); do
         # echo $folder/spectrogram
+        # run in parallel subprocesses
+
         python src/wav_to_spectrogram.py \
             --in_file $wav \
-            --out_dir $folder/spectrogram/
+            --out_dir $folder/spectrogram/ &
     done
 done
