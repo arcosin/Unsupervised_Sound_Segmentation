@@ -1,10 +1,8 @@
 # Usage: python preprocess.py --in_dir <raw_dir> --out_dir <out_dir> --chunk_time <chunk_time>
 
-from textwrap import indent
 import pydub
 import os
 import argparse
-from colorama import Fore
 
 
 def preprocess(in_dir='../dataset/raw/', out_dir='../dataset/processed/', chunk_time=5):
@@ -38,18 +36,6 @@ def preprocess(in_dir='../dataset/raw/', out_dir='../dataset/processed/', chunk_
         # TODO: Delete the following two lines after 0012 is processed
         print_yellow(f'Warning: 0012 is not processed due to large file size')
         break
-
-
-def print_green(text):
-    print(Fore.GREEN + text + Fore.RESET)
-
-
-def print_red(text):
-    print(Fore.RED + text + Fore.RESET)
-
-
-def print_yellow(text):
-    print(Fore.YELLOW + text + Fore.RESET)
 
 
 if __name__ == '__main__':
