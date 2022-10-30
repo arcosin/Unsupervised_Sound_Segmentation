@@ -1,0 +1,1 @@
+Folder for VQ-VAE model for ESC-50
