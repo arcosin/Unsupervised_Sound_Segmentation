@@ -2,10 +2,8 @@
 # Usage: python spectrogram_to_wav.py --from_array <array_file> --out_file <output_file>
 
 import argparse
-import os
 import librosa
 import librosa.display
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io.wavfile as wavfile
 
