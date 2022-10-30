@@ -103,6 +103,7 @@ for file in os.listdir(image_path):
 #dataloader_test = torch.utils.data.DataLoader(X, batch_size=512)
 for x in test_dataloader:
     x = x[0].to(DEVICE).float()
+    x = x[:, None, :, :]
     reconstruct_x = vae.generate(x)
     new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
     grid_pics = make_grid(new_x.to('cpu'), 8)
