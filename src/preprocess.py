@@ -4,6 +4,7 @@ from textwrap import indent
 import pydub
 import os
 import argparse
+from colorama import Fore
 
 
 def preprocess(in_dir='../dataset/raw/', out_dir='../dataset/processed/', chunk_time=5):
@@ -32,7 +33,23 @@ def preprocess(in_dir='../dataset/raw/', out_dir='../dataset/processed/', chunk_
                 os.makedirs(processed_dir + file[:-4])
             chunk.export(processed_dir + file[:-4] +
                          '/' + str(i) + '.wav', format='wav')
+        print_green(f'Processed {file} into {int(num_chunks)} chunks')
+
+        # TODO: Delete the following two lines after 0012 is processed
+        print_yellow(f'Warning: 0012 is not processed due to large file size')
         break
+
+
+def print_green(text):
+    print(Fore.GREEN + text + Fore.RESET)
+
+
+def print_red(text):
+    print(Fore.RED + text + Fore.RESET)
+
+
+def print_yellow(text):
+    print(Fore.YELLOW + text + Fore.RESET)
 
 
 if __name__ == '__main__':
