@@ -195,17 +195,47 @@ def main(args):
         with open(os.path.join("data", filename), 'rb') as f:
             return pickle.load(f)
 
-    train_data = load_data('train_spectrograms.pkl')
-    train_labels = load_data('train_labels.pkl')
-    test_data = load_data('test_spectrograms.pkl')
-    test_labels = load_data('test_labels.pkl')
-    train_labels = F.one_hot(train_labels)
-    test_labels = F.one_hot(test_labels)
+    #train_data = load_data('train_spectrograms.pkl')
+    #train_labels = load_data('train_labels.pkl')
+    #test_data = load_data('test_spectrograms.pkl')
+    #test_labels = load_data('test_labels.pkl')
+    #train_labels = F.one_hot(train_labels)
+    #test_labels = F.one_hot(test_labels)
     DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-    train_ds = torch.utils.data.TensorDataset(train_data.to(DEVICE), train_labels.to(DEVICE))
-    test_ds = torch.utils.data.TensorDataset(test_data.to(DEVICE), test_labels.to(DEVICE))
-    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size)
-    test_loader = torch.utils.data.DataLoader(test_ds, batch_size=args.batch_size)
+    #train_ds = torch.utils.data.TensorDataset(train_data.to(DEVICE), train_labels.to(DEVICE))
+    #test_ds = torch.utils.data.TensorDataset(test_data.to(DEVICE), test_labels.to(DEVICE))
+    #train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size)
+    #test_loader = torch.utils.data.DataLoader(test_ds, batch_size=args.batch_size)
+
+    image_path = "../dataset/processed/ZOOM0009/spectrogram/"
+    X = []
+    tensor_transform = transforms.ToTensor()
+    for file in os.listdir(image_path):
+        fname = os.fsdecode(file)
+        png = Image.open(image_path + fname)
+        png.load()
+        newImg = Image.new("RGB", png.size, (255, 255, 255))
+        newImg.paste(png, mask=png.split()[3])
+        newImg.save(image_path + 'temp.png', 'PNG')
+        X.append(tensor_transform(Image.open(image_path + 'temp.png')))
+    os.remove(image_path + 'temp.png')
+
+    class Custom_Dataset(torch.utils.data.dataset.Dataset):
+        def __init__(self, _dataset):
+            self.dataset = _dataset
+
+        def __getitem__(self, index):
+            example = self.dataset[index]
+            return np.array(example)
+
+        def __len__(self):
+            return len(self.dataset)
+
+    X = Custom_Dataset(X)
+
+    train_loader = torch.utils.data.DataLoader(X, batch_size=args.batch_size)
+    test_loader = torch.utils.data.DataLoader(X, batch_size=args.batch_size)
+
 
     for epoch in range(1, args.epochs + 1):
         train_losses = train(epoch, model, train_loader, optimizer, args.cuda,
@@ -229,8 +259,8 @@ def train(epoch, model, train_loader, optimizer, cuda, log_interval, save_path, 
     epoch_losses = {k + '_train': 0 for k, v in loss_dict.items()}
     start_time = time.time()
     batch_idx, data = None, None
-    for batch_idx, (data, _) in enumerate(train_loader):
-        data.reshape(data.shape[0], 2, data.shape[1], int(data.shape[2] / 2))
+    for batch_idx, data in enumerate(train_loader):
+        data.reshape(data.shape[0], 2, data.shape[1], int(data.shape[2]))
         if cuda:
             data = data.cuda()
         optimizer.zero_grad()
