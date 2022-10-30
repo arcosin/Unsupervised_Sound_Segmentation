@@ -11,7 +11,7 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 
 
-def wav_to_spectrogram(in_file, out_dir):
+def wav_to_spectrogram(in_file: str, out_dir: str) -> None:
     # Convert wav to spectrogram without x-axis, y-axis, and colorbar
     # Read the wav file
     data, sr = librosa.load(in_file)

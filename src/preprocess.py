@@ -6,7 +6,9 @@ import argparse
 from utils import print_green, print_yellow
 
 
-def preprocess(in_dir='../dataset/raw/', out_dir='../dataset/processed/', chunk_time=5):
+def preprocess(in_dir: str = '../dataset/raw/',
+               out_dir: str = '../dataset/processed/',
+               chunk_time: int = 5) -> None:
     raw_dir = in_dir
     processed_dir = out_dir
 

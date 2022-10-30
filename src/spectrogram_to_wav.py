@@ -10,7 +10,7 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 
 
-def spectrogram_to_wav(from_array, out_file):
+def spectrogram_to_wav(from_array: np.ndarray, out_file: str) -> None:
     # Read the spectrogram
     S = np.load(from_array)
     # Convert to linear scale
