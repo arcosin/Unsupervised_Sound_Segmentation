@@ -23,7 +23,7 @@ def wav_to_spectrogram(in_file: str, out_dir: str) -> None:
     # Convert to log scale
     log_S = librosa.power_to_db(S, ref=np.max)
     # Plot the spectrogram
-    fig = plt.figure(figsize=(500, 128))
+    fig = plt.figure(figsize=(646, 167))
     librosa.display.specshow(log_S, sr=sr)
     # plt.tight_layout()
     plt.axis('off')
@@ -32,7 +32,7 @@ def wav_to_spectrogram(in_file: str, out_dir: str) -> None:
         os.makedirs(out_dir)
     out_file = out_dir + in_file.split('/')[-1][:-4] + '.png'
     print_green(f'Saving {out_file}')
-    plt.savefig(out_file, bbox_inches='tight', pad_inches=0)
+    plt.savefig(out_file, bbox_inches='tight', pad_inches=0, dpi=1)
     plt.close()
 
 

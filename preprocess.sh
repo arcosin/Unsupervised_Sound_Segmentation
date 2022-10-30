@@ -11,6 +11,6 @@ for folder in $(ls -d dataset/processed/* | grep -v spectrogram); do
 
         python src/wav_to_spectrogram.py \
             --in_file $wav \
-            --out_dir $folder/spectrogram/ &
+            --out_dir $folder/spectrogram/ 
     done
 done
