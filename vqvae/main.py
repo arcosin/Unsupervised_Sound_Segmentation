@@ -12,12 +12,15 @@ import pickle
 import torch
 from vq_vae import VQVAE
 
+
 def read_pkl(pkl_file):
     with open(pkl_file, 'rb') as f:
         data = pickle.load(f)
     return data
 
-DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
+DEVICE = 'cuda:0' if torch.cuda.is_available() else (
+    'mps' if torch.backends.mps.is_available() else 'cpu')
 vae = VQVAE(1, 28, 100, [16, 64, 128]).to(DEVICE)
 transform = Compose([
     ToTensor(),
@@ -25,8 +28,8 @@ transform = Compose([
 ])
 
 #image_path = "C:\\Users\\elico\\Documents\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
-train_data = read_pkl('../data/train_tensor-001.pkl')
-test_data = read_pkl('../data/test_tensor.pkl')
+train_data = read_pkl('../dataset/train_tensor.pkl')
+test_data = read_pkl('../dataset/test_tensor.pkl')
 #X = []
 #tensor_transform = transforms.ToTensor()
 """
