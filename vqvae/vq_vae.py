@@ -102,7 +102,7 @@ class VQVAE(BaseVAE):
                                    kernel_size=4,
                                    stride=2, padding=1),
                 nn.Tanh(),
-                nn.Upsample((28, 28))))  # only for MNIST datasets to upsample at size (28, 28)
+                nn.Upsample((128, 500))))
 
         self.decoder = nn.Sequential(*modules)
 
