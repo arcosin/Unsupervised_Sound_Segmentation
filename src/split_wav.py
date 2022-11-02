@@ -21,6 +21,7 @@ TEST_TENSOR_FNAME = "test_tensor_-1to1.pkl"
 # Parameters
 DISPLAY_SPECTOGRAMS = False								# If set to true, will display spectograms while slicing them
 NORMALIZE_RANGE = True 									# If set to true, will normalize range to 0-1
+DENORM_FACTOR = 63.99771								# Factor to denormalize range
 
 # Functions
 def display_spectogram(spec):
@@ -29,6 +30,14 @@ def display_spectogram(spec):
 		librosa.display.specshow(spec)
 		plt.colorbar()
 		plt.show()
+
+def undo_range_normalization(spec, factor = DENORM_FACTOR):
+	if type(spectrogram) == list:
+		nspec = [item * DENORM_FACTOR for item in spectrogram]
+		return nspec
+	else:
+		return = spectrogram * DENORM_FACTOR
+
 
 def generate_tensor_pickles():
 	s_time = time.time()
@@ -52,9 +61,10 @@ def generate_tensor_pickles():
 			scale = abs(rmax)
 		else:
 			scale = abs(rmin)
+		print(scale)
 		spectrograms = spectrograms / scale
 		print(np.amax(spectrograms),np.amin(spectrograms))
-
+	exit()
 	train_list = spectrograms[0:int(len(spectrograms) * TRAIN_TEST_SPLIT)]
 	test_list = spectrograms[int(len(spectrograms) * TRAIN_TEST_SPLIT):]
 	train_tensor = torch.Tensor(np.array(train_list))
