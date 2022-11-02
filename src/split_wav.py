@@ -15,11 +15,12 @@ FILENAMES = ["1.wav", "2.wav", "3.wav", "4.wav", "5.wav", "6.wav", "7.wav", "8.w
 FRAME_SIZE = 500										# Frame size in ms
 STEP_SIZE = 250 										# Frame step size for overlap. set to FRAME_SIZE for no overlap
 TRAIN_TEST_SPLIT = 0.9									# Train-Test dataset splits
-TRAIN_TENSOR_FNAME = "train_tensor.pkl"
-TEST_TENSOR_FNAME = "test_tensor.pkl"
+TRAIN_TENSOR_FNAME = "train_tensor_-1to1.pkl"
+TEST_TENSOR_FNAME = "test_tensor_-1to1.pkl"
 
 # Parameters
-DISPLAY_SPECTOGRAMS = True								# If set to true, will display spectograms while slicing them
+DISPLAY_SPECTOGRAMS = False								# If set to true, will display spectograms while slicing them
+NORMALIZE_RANGE = True 									# If set to true, will normalize range to 0-1
 
 # Functions
 def display_spectogram(spec):
@@ -42,6 +43,17 @@ def generate_tensor_pickles():
 			t_spect = spect[:,i:(i + FRAME_SIZE)]
 			spectrograms.append(t_spect)
 			display_spectogram(t_spect)
+
+	if (NORMALIZE_RANGE):
+		rmax = np.amax(spectrograms)
+		rmin = np.amin(spectrograms)
+		scale = 0
+		if abs(rmax) > abs(rmin):
+			scale = abs(rmax)
+		else:
+			scale = abs(rmin)
+		spectrograms = spectrograms / scale
+		print(np.amax(spectrograms),np.amin(spectrograms))
 
 	train_list = spectrograms[0:int(len(spectrograms) * TRAIN_TEST_SPLIT)]
 	test_list = spectrograms[int(len(spectrograms) * TRAIN_TEST_SPLIT):]
