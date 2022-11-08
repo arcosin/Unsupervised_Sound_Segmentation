@@ -168,3 +168,5 @@ dataset/raw/ZOOM0012_split2.mp3
 dataset/raw/ZOOM0012_split3.mp3
 dataset/raw/ZOOM0012_split4.mp3
 *.pkl
+
+*.wav
