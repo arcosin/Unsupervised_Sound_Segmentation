@@ -108,4 +108,5 @@ for x in test_dataloader:
     new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
     grid_pics = make_grid(new_x.to('cpu'), 8)
     plt.imshow(grid_pics.permute(1, 2, 0))
+    plt.show()
     break
