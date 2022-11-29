@@ -29,7 +29,7 @@ class VQVAE(BaseVAE):
 
         modules = []
         if hidden_dims is None:
-            hidden_dims = [128, 256]
+            hidden_dims = [257, 400]
 
         # Build Encoder
         for h_dim in hidden_dims:
@@ -102,7 +102,7 @@ class VQVAE(BaseVAE):
                                    kernel_size=4,
                                    stride=2, padding=1),
                 nn.Tanh(),
-                nn.Upsample((128, 500))))
+                nn.Upsample((257, 862))))
 
         self.decoder = nn.Sequential(*modules)
 

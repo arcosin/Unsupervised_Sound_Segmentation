@@ -27,9 +27,8 @@ transform = Compose([
     Normalize((0.1307,), (0.3081,))
 ])
 
-#image_path = "C:\\Users\\elico\\Documents\\Unsupervised_Sound_Segmentation\\dataset\\processed\\ZOOM0009\\spectrogram\\"
-train_data = read_pkl('../dataset/train_tensor.pkl')
-test_data = read_pkl('../dataset/test_tensor.pkl')
+train_data = read_pkl("train_spectrograms.p")
+test_data = read_pkl('test_spectrograms.p')
 #X = []
 #tensor_transform = transforms.ToTensor()
 """
@@ -66,8 +65,8 @@ X = Custom_Dataset(X)
 #dataloader = torch.utils.data.DataLoader(X, batch_size=512)
 train_ds = TensorDataset(train_data.to(DEVICE))
 test_ds = TensorDataset(test_data.to(DEVICE))
-train_dataloader = DataLoader(train_ds, batch_size=512)
-test_dataloader = DataLoader(train_ds, batch_size=512)
+train_dataloader = DataLoader(train_ds, batch_size=64)
+test_dataloader = DataLoader(train_ds, batch_size=64)
 
 optimizer = torch.optim.AdamW(vae.parameters(), lr=1e-3)
 
