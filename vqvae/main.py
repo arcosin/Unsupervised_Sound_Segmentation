@@ -27,8 +27,8 @@ transform = Compose([
     Normalize((0.1307,), (0.3081,))
 ])
 
-train_data = read_pkl("train_spectrograms.p")
-test_data = read_pkl('test_spectrograms.p')
+train_data = read_pkl("train_spectograms.p")
+test_data = read_pkl('test_spectograms.p')
 #X = []
 #tensor_transform = transforms.ToTensor()
 """
@@ -66,7 +66,7 @@ X = Custom_Dataset(X)
 train_ds = TensorDataset(train_data.to(DEVICE))
 test_ds = TensorDataset(test_data.to(DEVICE))
 train_dataloader = DataLoader(train_ds, batch_size=64)
-test_dataloader = DataLoader(train_ds, batch_size=64)
+test_dataloader = DataLoader(test_ds, batch_size=64)
 
 optimizer = torch.optim.AdamW(vae.parameters(), lr=1e-3)
 
