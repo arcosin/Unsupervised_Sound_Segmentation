@@ -4,9 +4,6 @@ from torchvision.utils import make_grid
 from tqdm import tqdm
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision.transforms import Normalize, Compose, ToTensor
-from torchvision import transforms
-from PIL import Image
-import os
 import numpy as np
 import pickle
 import torch
@@ -29,40 +26,7 @@ transform = Compose([
 
 train_data = read_pkl("train_spectograms.p")
 test_data = read_pkl('test_spectograms.p')
-#X = []
-#tensor_transform = transforms.ToTensor()
-"""
-for file in os.listdir(image_path):
-    fname = os.fsdecode(file)
-    png = Image.open(image_path + fname)
-    png.load()
-    newImg = Image.new("RGB", png.size, (255, 255, 255))
-    newImg.paste(png, mask=png.split()[3])
-    newImg.save(image_path + 'temp.png', 'PNG')
-    X.append(tensor_transform(Image.open(image_path + 'temp.png')))
-os.remove(image_path + 'temp.png')
-"""
-"""
-for file in os.listdir(image_path):
-    fname = os.fsdecode(file)
-    img = Image.open(image_path + fname).convert('L')
-    X.append(tensor_transform(img))
 
-class Custom_Dataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, _dataset):
-        self.dataset = _dataset
-
-    def __getitem__(self, index):
-        example = self.dataset[index]
-        return np.array(example)
-
-    def __len__(self):
-        return len(self.dataset)
-
-
-X = Custom_Dataset(X)
-"""
-#dataloader = torch.utils.data.DataLoader(X, batch_size=512)
 train_ds = TensorDataset(train_data.to(DEVICE))
 test_ds = TensorDataset(test_data.to(DEVICE))
 train_dataloader = DataLoader(train_ds, batch_size=64)
@@ -71,6 +35,7 @@ test_dataloader = DataLoader(test_ds, batch_size=64)
 optimizer = torch.optim.AdamW(vae.parameters(), lr=1e-3)
 
 # Train
+"""
 tqdm_bar = tqdm(range(5))
 for ep in tqdm_bar:
     for i, x in enumerate(train_dataloader):
@@ -84,20 +49,14 @@ for ep in tqdm_bar:
         optimizer.zero_grad()
         if i % 10 == 0:
             tqdm_bar.set_description('loss: {}'.format(loss['loss']))
-
+"""
 # vae.load_state_dict(torch.load('./vae.pt'))
-torch.save(vae, "./weights")
-#vae = torch.load("./weights")
+#torch.save(vae, "./weights")
+
+# for test
+vae = torch.load("./weights")
 vae.eval()
 
-"""
-X_test = []
-tensor_transform = transforms.ToTensor()
-for file in os.listdir(image_path):
-    fname = os.fsdecode(file)
-    img = Image.open(image_path + fname).convert('L')
-    X_test.append(tensor_transform(img))
-    """
 # Reconstruction
 #dataloader_test = torch.utils.data.DataLoader(X, batch_size=512)
 for x in test_dataloader:
@@ -105,11 +64,20 @@ for x in test_dataloader:
     x = x[:, None, :, :]
     reconstruct_x = vae.generate(x)
     #new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
+    i = 0
+    x_orig = x[i]
+    x_new = reconstruct_x[i]
     #grid_pics = make_grid(new_x.to('cpu'), 8)
     #plt.imshow(grid_pics.permute(1, 2, 0))
-    new_x = reconstruct_x.detach()[0]
-    plt.imshow(new_x.permute(1,2,0))
+    plt.imshow(x_orig.permute(1,2,0))
     plt.axis('off')
-    plt.savefig("x0.png", bbox_inches='tight', pad_inches=0)
-    plt.show()
+    plt.savefig(f'../VQVAE/sounds/x{i}_orig.png', bbox_inches='tight', pad_inches = 0)
+    plt.imshow(x_new.permute(1, 2, 0).detach().numpy())
+    plt.axis('off')
+    plt.savefig(f'../VQVAE/sounds/x{i}_new.png', bbox_inches='tight', pad_inches = 0)
+
+    with open(f'../VQVAE/sounds/x{i}_orig.npy', 'wb') as f:
+        np.save(f, np.squeeze(np.array(x_orig)))
+    with open(f'../VQVAE/sounds/x{i}_new.npy', 'wb') as g:
+        np.save(g, np.squeeze(x_new.detach().numpy()))
     break
