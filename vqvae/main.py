@@ -104,8 +104,12 @@ for x in test_dataloader:
     x = x[0].to(DEVICE).float()
     x = x[:, None, :, :]
     reconstruct_x = vae.generate(x)
-    new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
-    grid_pics = make_grid(new_x.to('cpu'), 8)
-    plt.imshow(grid_pics.permute(1, 2, 0))
+    #new_x = torch.cat([x, reconstruct_x.detach()], dim=0)
+    #grid_pics = make_grid(new_x.to('cpu'), 8)
+    #plt.imshow(grid_pics.permute(1, 2, 0))
+    new_x = reconstruct_x.detach()[0]
+    plt.imshow(new_x.permute(1,2,0))
+    plt.axis('off')
+    plt.savefig("x0.png", bbox_inches='tight', pad_inches=0)
     plt.show()
     break

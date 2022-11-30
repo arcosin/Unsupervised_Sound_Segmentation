@@ -29,7 +29,7 @@ class VQVAE(BaseVAE):
 
         modules = []
         if hidden_dims is None:
-            hidden_dims = [257, 400]
+            hidden_dims = [128, 256]
 
         # Build Encoder
         for h_dim in hidden_dims:
