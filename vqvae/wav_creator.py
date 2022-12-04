@@ -1,10 +1,7 @@
 import librosa
 import librosa.display
 import numpy as np
-import scipy.io.wavfile as wavfile
-from torch import Tensor
 import soundfile
-from PIL import Image
 
 num_fft=512
 def spectrogram_to_wav(from_array: np.ndarray, out_file: str, sr=22050) -> None:
@@ -18,7 +15,6 @@ def spectrogram_to_wav(from_array: np.ndarray, out_file: str, sr=22050) -> None:
 
 
 if __name__ == '__main__':
-    spectrogram = None
     i = 1
     with open(f'../VQVAE/sounds/x{i}_orig.npy', 'rb') as f:
         spectrogram_orig = np.load(f)
